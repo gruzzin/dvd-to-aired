@@ -6,14 +6,7 @@ import datetime as dt
 import requests
 import simplejson as json
 
-API_URL = 'https://api.thetvdb.com'
-
-cred = {
-    'username': 'dpetrov',
-    'userkey': '5C0031C22863D49B',
-    'apikey': '267A2E763EBB1821',
-}
-
+import settings as s
 
 class Token():
 
@@ -21,7 +14,7 @@ class Token():
     date = ''
 
     def __init__(self, cred):
-        resp = requests.post(API_URL + '/login', data=json.dumps(cred), headers={'Content-Type': 'application/json'})
+        resp = requests.post(s.API_URL + '/login', data=json.dumps(cred), headers={'Content-Type': 'application/json'})
         if resp.status_code == 200:
             self.token = resp.json()['token']
             self.date = dt.datetime.now()
@@ -31,7 +24,7 @@ class Token():
 
 class API():
 
-    def __init__(self, cred=cred):
+    def __init__(self, cred=s.cred):
         self._token = Token(cred)
 
     def _get_headers(self, lang='en'):
@@ -45,7 +38,7 @@ class API():
     def search(self, q):
         params = {'name' : q}
         res = []
-        resp = requests.get(API_URL + '/search/series', params=params, headers=self._get_headers())
+        resp = requests.get(s.API_URL + '/search/series', params=params, headers=self._get_headers())
 
         if resp.status_code == 200:
             for series in resp.json()['data']:
@@ -54,7 +47,7 @@ class API():
 
     def get_episodes_by_id(self, ep_id, page=1):
         params = {'page': page}
-        resp = requests.get(API_URL + '/series/%s/episodes' % ep_id, params=params, headers=self._get_headers())
+        resp = requests.get(s.API_URL + '/series/%s/episodes' % ep_id, params=params, headers=self._get_headers())
         if resp.status_code == 200:
             return resp.json()['data']
         else:
