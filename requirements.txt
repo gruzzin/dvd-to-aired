@@ -1,1 +1,2 @@
-tvdb_client
+requests
+simplejson
