@@ -49,16 +49,28 @@ class API():
         params = {'page': page}
         resp = requests.get(s.API_URL + '/series/%s/episodes' % ep_id, params=params, headers=self._get_headers())
         if resp.status_code == 200:
-            return resp.json()['data']
+            return resp.json()
         else:
             return []
 
 
 class EpisodeIter():
 
-    def __init__(self, api):
+    def __init__(self, api, q):
         self.api = api
+        self.page = 1
+        self.id = api.search(q)[0]['id']
 
+    def __iter__(self):
+        self.idx = 0
+        res = api.get_episodes_by_id(self.id)
+        if len(res) > 0:
+            return self
+        else:
+            raise StopIteration
+
+    def __next__(self):
+        pass
 
 
 if __name__ == '__main__':
